@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">assignment3</string>
+    <string name="MVP">MVP</string>
+    <string name="MVVM">MVVM</string>
+    <string name="Enter_number_1">Enter number 1</string>
+    <string name="Enter_number_2">Enter number 2</string>
+    <string name="ADD">ADD</string>
+    <string name="SUBTRACT">SUBTRACT</string>
+    <string name="MULTIPLY">MULTIPLY</string>
+    <string name="DIVIDE">DIVIDE</string>
+    <string name="title_activity_main">Assignment3</string>
+</resources>
