@@ -9,17 +9,23 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.cs4520.assignment3.R
+import com.cs4520.assignment3.com.cs4520.assignment3.mvp.view.MVPFragment
+import com.cs4520.assignment3.databinding.FragmentMvpBinding
+import com.cs4520.assignment3.databinding.FragmentMvvmBinding
 
 class MVVMFragment : Fragment() {
     private lateinit var viewModel: MVVMCalculatorViewModel
 
+    private var _binding: FragmentMvvmBinding? = null
+    private val binding get() = _binding!!
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.mvvm_fragment, container, false)
-        viewModel = ViewModelProvider(this).get(MVVMCalculatorViewModel::class.java)
+        _binding = FragmentMvvmBinding.inflate(inflater, container, false)
+        val view = binding.root
+        viewModel = ViewModelProvider(this)[MVVMCalculatorViewModel::class.java]
 
         val number1: EditText = view.findViewById(R.id.number1EditText)
         val number2: EditText = view.findViewById(R.id.number2EditText)
@@ -38,28 +44,37 @@ class MVVMFragment : Fragment() {
         }
 
         viewModel.result.observe(viewLifecycleOwner) {
-            textView.setText(it)
+            textView.text = it
         }
 
         addButton.setOnClickListener {
             viewModel.setNumber1(number1.text.toString())
             viewModel.setNumber2(number2.text.toString())
             calculate('+', number1.text.toString(), number2.text.toString())
+            number1.text.clear()
+            number2.text.clear()
+
         }
         subtractButton.setOnClickListener {
             viewModel.setNumber1(number1.text.toString())
             viewModel.setNumber2(number2.text.toString())
             calculate('-', number1.text.toString(), number2.text.toString())
+            number1.text.clear()
+            number2.text.clear()
         }
         multiplyButton.setOnClickListener {
             viewModel.setNumber1(number1.text.toString())
             viewModel.setNumber2(number2.text.toString())
             calculate('*', number1.text.toString(), number2.text.toString())
+            number1.text.clear()
+            number2.text.clear()
         }
         divideButton.setOnClickListener {
             viewModel.setNumber1(number1.text.toString())
             viewModel.setNumber2(number2.text.toString())
             calculate('/', number1.text.toString(), number2.text.toString())
+            number1.text.clear()
+            number2.text.clear()
         }
 
         viewModel.result.observe(viewLifecycleOwner) { result ->
@@ -89,5 +104,10 @@ class MVVMFragment : Fragment() {
         } else {
             Toast.makeText(requireContext(), "Please enter both numbers", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

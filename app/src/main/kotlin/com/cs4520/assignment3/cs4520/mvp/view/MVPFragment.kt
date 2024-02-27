@@ -11,6 +11,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.cs4520.assignment3.R
 import com.cs4520.assignment3.com.cs4520.assignment3.mvp.presenter.MVPCalculatorPresenterImp
+import com.cs4520.assignment3.databinding.FragmentHomeBinding
+import com.cs4520.assignment3.databinding.FragmentMvpBinding
 import java.util.logging.Logger
 
 class MVPFragment : Fragment(), MVPCalculatorView {
@@ -19,14 +21,17 @@ class MVPFragment : Fragment(), MVPCalculatorView {
         private val logger = Logger.getLogger("MyLogger")
     }
 
+    private var _binding: FragmentMvpBinding? = null
+    private val binding get() = _binding!!
+    val presenter = MVPCalculatorPresenterImp(this)
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.mvp_fragment, container, false)
-
-        val presenter = MVPCalculatorPresenterImp(this)
+        _binding = FragmentMvpBinding.inflate(inflater, container, false)
+        val view = binding.root
 
         val number1 : EditText = view.findViewById(R.id.number1EditText)
         val number2 : EditText = view.findViewById(R.id.number2EditText)
@@ -35,88 +40,57 @@ class MVPFragment : Fragment(), MVPCalculatorView {
         val multiplyButton : Button = view.findViewById(R.id.multiplyButton)
         val divideButton : Button = view.findViewById(R.id.divideButton)
 
-
-        addButton.setOnClickListener{
-            val num1String = number1.text.toString()
-            val num2String = number2.text.toString()
-
-            if (num1String.isNotEmpty() && num2String.isNotEmpty()) {
-                val num1 = num1String.toIntOrNull()
-                val num2 = num2String.toIntOrNull()
-
-                if (num1 != null && num2 != null) {
-                    presenter.add(num1, num2)
-                    number1.text.clear()
-                    number2.text.clear()
-                } else {
-                    Toast.makeText(requireContext(), "Please enter valid numbers", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                Toast.makeText(requireContext(), "Please enter both numbers", Toast.LENGTH_SHORT).show()
-            }
+        fun performOperation(operation: Char) {
+            calculate(operation, number1.text.toString(), number2.text.toString())
         }
 
-        subtractButton.setOnClickListener{
-            val num1String = number1.text.toString()
-            val num2String = number2.text.toString()
-
-            if (num1String.isNotEmpty() && num2String.isNotEmpty()) {
-                val num1 = num1String.toIntOrNull()
-                val num2 = num2String.toIntOrNull()
-
-                if (num1 != null && num2 != null) {
-                    presenter.subtract(num1, num2)
-                    number1.text.clear()
-                    number2.text.clear()
-                } else {
-                    Toast.makeText(requireContext(), "Please enter valid numbers", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                Toast.makeText(requireContext(), "Please enter both numbers", Toast.LENGTH_SHORT).show()
-            }
+        addButton.setOnClickListener {
+            performOperation('+')
+            number1.text.clear()
+            number2.text.clear()
         }
 
-        multiplyButton.setOnClickListener{
-            val num1String = number1.text.toString()
-            val num2String = number2.text.toString()
-
-            if (num1String.isNotEmpty() && num2String.isNotEmpty()) {
-                val num1 = num1String.toIntOrNull()
-                val num2 = num2String.toIntOrNull()
-
-                if (num1 != null && num2 != null) {
-                    presenter.multiply(num1, num2)
-                    number1.text.clear()
-                    number2.text.clear()
-                } else {
-                    Toast.makeText(requireContext(), "Please enter valid numbers", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                Toast.makeText(requireContext(), "Please enter both numbers", Toast.LENGTH_SHORT).show()
-            }
+        subtractButton.setOnClickListener {
+            performOperation('-')
+            number1.text.clear()
+            number2.text.clear()
         }
 
-        divideButton.setOnClickListener{
-            val num1String = number1.text.toString()
-            val num2String = number2.text.toString()
+        multiplyButton.setOnClickListener {
+            performOperation('*')
+            number1.text.clear()
+            number2.text.clear()
+        }
 
-            if (num1String.isNotEmpty() && num2String.isNotEmpty()) {
-                val num1 = num1String.toIntOrNull()
-                val num2 = num2String.toIntOrNull()
-
-                if (num1 != null && num2 != null) {
-                    presenter.divide(num1, num2)
-                    number1.text.clear()
-                    number2.text.clear()
-                } else {
-                    Toast.makeText(requireContext(), "Please enter valid numbers", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                Toast.makeText(requireContext(), "Please enter both numbers", Toast.LENGTH_SHORT).show()
-            }
+        divideButton.setOnClickListener {
+            performOperation('/')
+            number1.text.clear()
+            number2.text.clear()
         }
         return view
     }
+
+
+private fun calculate(operation: Char, num1: String, num2: String) {
+    if (num1.isNotEmpty() && num2.isNotEmpty()) {
+        val num1Int = num1.toIntOrNull()
+        val num2Int = num2.toIntOrNull()
+
+        if (num1Int != null && num2Int != null) {
+            when (operation) {
+                '+' -> presenter.add(num1Int, num2Int)
+                '-' -> presenter.subtract(num1Int, num2Int)
+                '*' -> presenter.multiply(num1Int, num2Int)
+                '/' -> presenter.divide(num1Int, num2Int)
+                else -> throw IllegalArgumentException("Invalid operation")
+            }
+        } else {
+            Toast.makeText(requireContext(), "Please enter valid numbers", Toast.LENGTH_SHORT).show()
+        }
+    } else {
+        Toast.makeText(requireContext(), "Please enter both numbers", Toast.LENGTH_SHORT).show()
+    }
+}
 
     override fun onStart() {
         super.onStart()
@@ -131,6 +105,7 @@ class MVPFragment : Fragment(), MVPCalculatorView {
 
     override fun onDestroy() {
         super.onDestroy()
+        _binding = null
         logger.info("On destroy is called")
     }
 

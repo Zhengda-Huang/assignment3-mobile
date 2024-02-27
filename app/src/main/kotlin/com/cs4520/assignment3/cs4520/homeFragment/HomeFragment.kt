@@ -9,6 +9,7 @@ import android.widget.Button
 import androidx.fragment.app.Fragment
 import com.cs4520.assignment3.R
 import com.cs4520.assignment3.com.cs4520.assignment3.mvp.view.MVPFragment
+import com.cs4520.assignment3.databinding.FragmentHomeBinding
 import java.util.logging.Logger
 
 class HomeFragment : Fragment(){
@@ -21,13 +22,15 @@ class HomeFragment : Fragment(){
         logger.info("On view created is called")
 
     }
-
+    private var _binding: FragmentHomeBinding? = null
+    private val binding get() = _binding!!
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.home_fragment, container, false)
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        val view = binding.root
         logger.info("On create view is called")
 
         val mvpButton: Button = view.findViewById(R.id.mvpButton)
@@ -54,5 +57,10 @@ class HomeFragment : Fragment(){
                 .commit()
         }
         return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
